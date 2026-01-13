@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертер балів НМТ</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Заголовок -->
+        <header class="header">
+            <h1><i class="fas fa-calculator"></i> Конвертер балів тестування у шкалу НМТ</h1>
+            <p class="subtitle">Конвертуйте бали тестування за системою НМТ для різних предметів</p>
+        </header>
+
+        <!-- Інформаційний блок -->
+        <div class="info-box">
+            <h3><i class="fas fa-info-circle"></i> Як це працює:</h3>
+            <ol>
+                <li>Завантажте Excel-файл (.xls або .xlsx) з результатами тестування</li>
+                <li>Оберіть предмет для конвертації балів</li>
+                <li>Вкажіть назви стовпців у вашому файлі</li>
+                <li>Отримайте готовий файл з балами НМТ</li>
+            </ol>
+            <div class="requirements">
+                <p><strong>Формат файлу:</strong> Excel (.xls, .xlsx)</p>
+                <p><strong>Стовпці у файлі:</strong> ПІБ учнів та бали тестування</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Ліва колонка - завантаження та налаштування -->
+            <div class="left-column">
+                <!-- Крок 1: Вибір предмету -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h3><i class="fas fa-book"></i> Вибір предмету</h3>
+                    </div>
+                    <div class="subject-grid" id="subjectGrid">
+                        <!-- Предмети будуть додані через JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Крок 2: Завантаження файлу -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h3><i class="fas fa-file-upload"></i> Завантаження файлу</h3>
+                    </div>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h4>Клікніть для вибору файлу або перетягніть сюди</h4>
+                        <p>Підтримуються формати: .xls, .xlsx</p>
+                        <input type="file" id="fileInput" accept=".xls,.xlsx" style="display: none;">
+                        <div class="file-label" id="fileLabel">
+                            <i class="fas fa-folder-open"></i> Оберіть файл
+                        </div>
+                    </div>
+
+                    <div class="file-preview" id="filePreview" style="display: none;">
+                        <div class="preview-header">
+                            <h4><i class="fas fa-eye"></i> Перегляд файлу</h4>
+                            <button class="btn-clear" id="clearFile">
+                                <i class="fas fa-times"></i> Очистити
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table id="previewTable">
+                                <thead id="tableHeader"></thead>
+                                <tbody id="tableBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="file-stats" id="fileStats"></div>
+                    </div>
+                </div>
+
+                <!-- Крок 3: Налаштування стовпців -->
+                <div class="step-card" id="columnSettings" style="display: none;">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <h3><i class="fas fa-cog"></i> Налаштування стовпців</h3>
+                    </div>
+                    
+                    <div class="column-selectors">
+                        <div class="selector-group">
+                            <label for="studentColumn">
+                                <i class="fas fa-user-graduate"></i> Стовпець з ПІБ учнів
+                            </label>
+                            <select id="studentColumn" class="column-select">
+                                <!-- Заповниться через JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="selector-group">
+                            <label for="scoreColumn">
+                                <i class="fas fa-chart-line"></i> Стовпець з тестовими балами
+                            </label>
+                            <select id="scoreColumn" class="column-select">
+                                <!-- Заповниться через JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary" id="convertBtn">
+                            <i class="fas fa-sync-alt"></i> Конвертувати бали
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Права колонка - інформація та результати -->
+            <div class="right-column">
+                <!-- Таблиця конвертації -->
+                <div class="info-card">
+                    <h3><i class="fas fa-table"></i> Таблиця конвертації</h3>
+                    <div class="conversion-info" id="conversionInfo">
+                        <!-- Інформація про таблицю конвертації -->
+                    </div>
+                </div>
+
+                <!-- Результати -->
+                <div class="info-card" id="resultsCard" style="display: none;">
+                    <h3><i class="fas fa-check-circle"></i> Результати</h3>
+                    
+                    <div class="results-stats" id="resultsStats">
+                        <!-- Статистика буде тут -->
+                    </div>
+
+                    <div class="results-preview" id="resultsPreview">
+                        <!-- Попередній перегляд результатів -->
+                    </div>
+
+                    <div class="download-buttons" id="downloadButtons">
+                        <!-- Кнопки завантаження -->
+                    </div>
+                </div>
+
+                <!-- Допомога -->
+                <div class="info-card">
+                    <h3><i class="fas fa-question-circle"></i> Допомога</h3>
+                    <div class="help-content">
+                        <p><strong>Якщо файл не завантажується:</strong></p>
+                        <ol>
+                            <li>Перевірте формат файлу (має бути .xls або .xlsx)</li>
+                            <li>Спробуйте переіменувати файл без кирилиці</li>
+                            <li>Переконайтеся, що файл не відкритий у Excel</li>
+                            <li>Якщо не працює - відкрийте сторінку через локальний сервер (див. інструкцію нижче)</li>
+                        </ol>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статус -->
+        <div class="status-bar" id="statusBar">
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+    </div>
+
+    <!-- Скрипти -->
+    <script src="script.js"></script>
+</body>
+</html>
